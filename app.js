@@ -1,4 +1,5 @@
 const STORAGE_KEY = "jobseeker.artifact.v1";
+const API_KEY_STORAGE = "jobseeker.geminiKey.v1";
 
 const sampleState = {
   files: [
@@ -122,6 +123,9 @@ const dom = {
   messages: document.querySelector('[data-role="message-list"]'),
   input: document.querySelector('[data-role="message-input"]'),
   onboarding: document.querySelector('[data-role="onboarding"]'),
+  apiKey: document.querySelector('[data-role="api-key"]'),
+  apiKeyInput: document.querySelector('[data-role="api-key-input"]'),
+  apiKeyStatus: document.querySelector('[data-role="api-key-status"]'),
 };
 
 const actions = {
@@ -132,6 +136,9 @@ const actions = {
   startFresh: document.querySelector('[data-action="start-fresh"]'),
   restoreSample: document.querySelector('[data-action="restore-sample"]'),
   dismissOnboarding: document.querySelector('[data-action="dismiss-onboarding"]'),
+  setApiKey: document.querySelector('[data-action="set-api-key"]'),
+  saveApiKey: document.querySelector('[data-action="save-api-key"]'),
+  clearApiKey: document.querySelector('[data-action="clear-api-key"]'),
 };
 
 const storedState = loadState();
@@ -256,6 +263,20 @@ function renderOnboarding() {
   }
 }
 
+function renderApiKeyOverlay(show) {
+  if (show) {
+    const storedKey = loadApiKey();
+    dom.apiKeyInput.value = storedKey ? maskKey(storedKey) : "";
+    dom.apiKeyInput.dataset.raw = storedKey || "";
+    dom.apiKeyStatus.textContent = storedKey
+      ? "Key saved locally. Paste to replace it."
+      : "No key saved yet.";
+    dom.apiKey.classList.add("is-visible");
+  } else {
+    dom.apiKey.classList.remove("is-visible");
+  }
+}
+
 let editTimer;
 
 if (dom.editor) {
@@ -307,6 +328,45 @@ actions.dismissOnboarding.addEventListener("click", () => {
   state.meta.onboardingDismissed = true;
   saveState();
   renderOnboarding();
+});
+
+actions.setApiKey.addEventListener("click", () => {
+  renderApiKeyOverlay(true);
+});
+
+actions.saveApiKey.addEventListener("click", () => {
+  const rawValue = dom.apiKeyInput.dataset.raw || dom.apiKeyInput.value.trim();
+  const value = rawValue.trim();
+  if (!value) {
+    dom.apiKeyStatus.textContent = "Paste a key to save it.";
+    return;
+  }
+  localStorage.setItem(API_KEY_STORAGE, value);
+  dom.apiKeyStatus.textContent = "Saved. This key stays in your browser.";
+  dom.apiKeyInput.value = maskKey(value);
+  dom.apiKeyInput.dataset.raw = value;
+});
+
+actions.clearApiKey.addEventListener("click", () => {
+  localStorage.removeItem(API_KEY_STORAGE);
+  dom.apiKeyInput.value = "";
+  dom.apiKeyInput.dataset.raw = "";
+  dom.apiKeyStatus.textContent = "Key cleared from this browser.";
+});
+
+dom.apiKeyInput.addEventListener("input", (event) => {
+  const target = event.target;
+  dom.apiKeyInput.dataset.raw = target.value;
+});
+
+dom.apiKeyInput.addEventListener("focus", () => {
+  dom.apiKeyInput.value = dom.apiKeyInput.dataset.raw || "";
+});
+
+dom.apiKey.addEventListener("click", (event) => {
+  if (event.target === dom.apiKey) {
+    renderApiKeyOverlay(false);
+  }
 });
 
 function sendMessage() {
@@ -367,6 +427,17 @@ function downloadFile(filename, contents) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+function loadApiKey() {
+  return localStorage.getItem(API_KEY_STORAGE);
+}
+
+function maskKey(value) {
+  if (value.length <= 8) {
+    return "••••••";
+  }
+  return `${value.slice(0, 4)}••••••${value.slice(-4)}`;
 }
 
 async function exportZipBundle() {

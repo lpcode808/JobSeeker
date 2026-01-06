@@ -310,6 +310,30 @@ button.ghost {
   font-size: 0.95rem;
 }
 
+.key-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.key-form input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(28, 28, 28, 0.2);
+  font-family: var(--mono);
+}
+
+.key-form__note {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.key-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 @keyframes floatIn {
   from {
     opacity: 0;

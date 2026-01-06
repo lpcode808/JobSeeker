@@ -26,6 +26,7 @@
         <div class="topbar__actions">
           <button class="ghost" data-action="start-fresh">Start Fresh</button>
           <button class="ghost" data-action="restore-sample">Restore Sample</button>
+          <button class="ghost" data-action="set-api-key">Set API Key</button>
           <button class="primary" data-action="export-json">Export JSON</button>
           <button class="primary" data-action="export-zip">Export ZIP</button>
           <button class="primary" data-action="export-markdown">Export Markdown</button>
@@ -96,6 +97,29 @@
           </div>
         </div>
         <button class="primary" data-action="dismiss-onboarding">Start Interview</button>
+      </div>
+    </div>
+
+    <div class="overlay" data-role="api-key">
+      <div class="overlay__card">
+        <div class="overlay__badge">Bring Your Own Key</div>
+        <h1>Paste your Gemini API key</h1>
+        <p>
+          This key stays in your browser storage and is only used to call Gemini
+          directly from this interface.
+        </p>
+        <div class="key-form">
+          <input
+            type="password"
+            placeholder="AIzaSy..."
+            data-role="api-key-input"
+          />
+          <div class="key-form__note" data-role="api-key-status"></div>
+        </div>
+        <div class="key-actions">
+          <button class="ghost" data-action="clear-api-key">Clear Key</button>
+          <button class="primary" data-action="save-api-key">Save Key</button>
+        </div>
       </div>
     </div>
 

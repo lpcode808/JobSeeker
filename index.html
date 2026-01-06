@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JobSeeker Artifact</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient"></div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand__dot"></span>
+          <div>
+            <div class="brand__title">JobSeeker Artifact</div>
+            <div class="brand__subtitle">Interview-ready profile builder</div>
+          </div>
+        </div>
+        <div class="topbar__actions">
+          <button class="ghost" data-action="start-fresh">Start Fresh</button>
+          <button class="ghost" data-action="restore-sample">Restore Sample</button>
+          <button class="primary" data-action="export-json">Export JSON</button>
+          <button class="primary" data-action="export-zip">Export ZIP</button>
+          <button class="primary" data-action="export-markdown">Export Markdown</button>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="panel panel--tree">
+          <div class="panel__header">
+            <div>
+              <h2>Artifact Files</h2>
+              <p>Stored locally in your browser</p>
+            </div>
+          </div>
+          <div class="tree" data-role="file-tree"></div>
+        </section>
+
+        <section class="panel panel--terminal">
+          <div class="panel__header">
+            <div>
+              <h2>Conversation</h2>
+              <p>Interview-style intake powered by your future model</p>
+            </div>
+          </div>
+          <div class="terminal" data-role="message-list"></div>
+          <div class="composer">
+            <textarea
+              rows="3"
+              placeholder="Share your background, goals, or paste a job description..."
+              data-role="message-input"
+            ></textarea>
+            <button class="primary" data-action="send">Send</button>
+          </div>
+        </section>
+
+        <section class="panel panel--editor">
+          <div class="panel__header">
+            <div>
+              <h2>Active File</h2>
+              <p data-role="active-path">Select a file to view or edit</p>
+            </div>
+          </div>
+          <textarea class="editor" data-role="file-editor" spellcheck="false"></textarea>
+        </section>
+      </main>
+    </div>
+
+    <div class="overlay" data-role="onboarding">
+      <div class="overlay__card">
+        <div class="overlay__badge">Onboarding</div>
+        <h1>Build your job artifact like a CLI dossier</h1>
+        <p>
+          Answer the interview prompts, drop in job descriptions, and keep a file tree of
+          your evolving story. Everything stays in your browser until you export.
+        </p>
+        <div class="overlay__steps">
+          <div>
+            <strong>Step 1</strong>
+            <span>Review the synthetic files to see the structure.</span>
+          </div>
+          <div>
+            <strong>Step 2</strong>
+            <span>Chat on the right to add new details to your intake notes.</span>
+          </div>
+          <div>
+            <strong>Step 3</strong>
+            <span>Edit or export the artifact when you are ready.</span>
+          </div>
+        </div>
+        <button class="primary" data-action="dismiss-onboarding">Start Interview</button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

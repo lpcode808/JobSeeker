@@ -1,5 +1,6 @@
 const STORAGE_KEY = "jobseeker.artifact.v1";
 const API_KEY_STORAGE = "jobseeker.geminiKey.v1";
+const THEME_KEY = "jobseeker.theme.v1";
 
 const sampleState = {
   files: [
@@ -139,6 +140,7 @@ const actions = {
   setApiKey: document.querySelector('[data-action="set-api-key"]'),
   saveApiKey: document.querySelector('[data-action="save-api-key"]'),
   clearApiKey: document.querySelector('[data-action="clear-api-key"]'),
+  toggleTheme: document.querySelector('[data-action="toggle-theme"]'),
 };
 
 const storedState = loadState();
@@ -179,6 +181,7 @@ function render() {
   renderMessages();
   renderEditor();
   renderOnboarding();
+  applyTheme(loadTheme() || "dark");
 }
 
 function renderTree() {
@@ -330,6 +333,13 @@ actions.dismissOnboarding.addEventListener("click", () => {
   renderOnboarding();
 });
 
+actions.toggleTheme.addEventListener("click", () => {
+  const current = loadTheme() || "dark";
+  const next = current === "dark" ? "light" : "dark";
+  saveTheme(next);
+  applyTheme(next);
+});
+
 actions.setApiKey.addEventListener("click", () => {
   renderApiKeyOverlay(true);
 });
@@ -431,6 +441,23 @@ function downloadFile(filename, contents) {
 
 function loadApiKey() {
   return localStorage.getItem(API_KEY_STORAGE);
+}
+
+function loadTheme() {
+  return localStorage.getItem(THEME_KEY);
+}
+
+function saveTheme(value) {
+  localStorage.setItem(THEME_KEY, value);
+}
+
+function applyTheme(value) {
+  document.documentElement.setAttribute("data-theme", value);
+  if (value === "light") {
+    actions.toggleTheme.textContent = "Dark Mode";
+  } else {
+    actions.toggleTheme.textContent = "Light Mode";
+  }
 }
 
 function maskKey(value) {

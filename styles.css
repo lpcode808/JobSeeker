@@ -1,4 +1,20 @@
 :root {
+  color-scheme: dark;
+  --bg: #0b1111;
+  --panel: rgba(19, 26, 25, 0.92);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --ink: #f4f1ec;
+  --muted: #b2b7b4;
+  --accent: #3cd7b2;
+  --accent-strong: #2fb896;
+  --terminal-bg: #0b0f10;
+  --terminal-ink: #f3f2ed;
+  --mono: "IBM Plex Mono", "Courier New", monospace;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"] {
   color-scheme: light;
   --bg: #f4f1ec;
   --panel: rgba(255, 255, 255, 0.9);
@@ -9,8 +25,6 @@
   --accent-strong: #0c5346;
   --terminal-bg: #101615;
   --terminal-ink: #f3f2ed;
-  --mono: "IBM Plex Mono", "Courier New", monospace;
-  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   --shadow: 0 18px 40px rgba(15, 20, 18, 0.12);
 }
 
@@ -30,13 +44,20 @@ body {
   position: fixed;
   inset: 0;
   background:
+    radial-gradient(circle at 10% 20%, rgba(60, 215, 178, 0.2), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(219, 124, 65, 0.22), transparent 40%),
+    radial-gradient(circle at 70% 90%, rgba(72, 115, 175, 0.18), transparent 45%),
+    linear-gradient(140deg, rgba(9, 13, 13, 0.98), rgba(18, 26, 26, 0.9));
+  z-index: -2;
+}
+
+[data-theme="light"] .ambient {
+  background:
     radial-gradient(circle at 10% 20%, rgba(15, 107, 90, 0.12), transparent 45%),
     radial-gradient(circle at 90% 10%, rgba(219, 124, 65, 0.18), transparent 40%),
     radial-gradient(circle at 70% 90%, rgba(72, 115, 175, 0.15), transparent 45%),
     linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(243, 241, 236, 0.6));
-  z-index: -2;
 }
-
 .shell {
   padding: 32px 36px 40px;
   max-width: 1300px;
@@ -113,10 +134,13 @@ button.primary:hover {
 
 button.ghost {
   background: transparent;
-  border: 1px solid rgba(28, 28, 28, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   color: var(--ink);
 }
 
+[data-theme="light"] button.ghost {
+  border: 1px solid rgba(28, 28, 28, 0.2);
+}
 .grid {
   display: grid;
   grid-template-columns: 1.1fr 1.6fr 1.2fr;
@@ -232,28 +256,43 @@ button.ghost {
   flex: 1;
   resize: none;
   border-radius: 14px;
-  border: 1px solid rgba(28, 28, 28, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 12px;
   font-family: var(--mono);
+  background: rgba(9, 13, 13, 0.75);
+  color: var(--terminal-ink);
+}
+
+[data-theme="light"] .composer textarea {
+  border: 1px solid rgba(28, 28, 28, 0.1);
+  background: #fff;
+  color: var(--ink);
 }
 
 .editor {
   margin-top: 18px;
   flex: 1;
   border-radius: 16px;
-  border: 1px solid rgba(28, 28, 28, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 16px;
   font-family: var(--mono);
   font-size: 0.9rem;
   line-height: 1.5;
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(9, 13, 13, 0.75);
+  color: var(--terminal-ink);
   resize: none;
+}
+
+[data-theme="light"] .editor {
+  border: 1px solid rgba(28, 28, 28, 0.1);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--ink);
 }
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 20, 18, 0.6);
+  background: rgba(0, 0, 0, 0.6);
   display: none;
   align-items: center;
   justify-content: center;
@@ -266,11 +305,15 @@ button.ghost {
 
 .overlay__card {
   max-width: 540px;
-  background: #fefcf7;
+  background: #0f1717;
   padding: 30px;
   border-radius: 20px;
   box-shadow: var(--shadow);
   animation: floatIn 0.8s ease;
+}
+
+[data-theme="light"] .overlay__card {
+  background: #fefcf7;
 }
 
 .overlay__badge {
@@ -319,13 +362,26 @@ button.ghost {
 .key-form input {
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(28, 28, 28, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   font-family: var(--mono);
+  background: rgba(9, 13, 13, 0.75);
+  color: var(--terminal-ink);
+}
+
+[data-theme="light"] .key-form input {
+  border: 1px solid rgba(28, 28, 28, 0.2);
+  background: #fff;
+  color: var(--ink);
 }
 
 .key-form__note {
   font-size: 0.85rem;
   color: var(--muted);
+}
+
+.key-form__trust {
+  font-size: 0.8rem;
+  color: var(--accent);
 }
 
 .key-actions {

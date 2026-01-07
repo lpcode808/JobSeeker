@@ -23,11 +23,23 @@
             <div class="brand__subtitle">Interview-ready profile builder</div>
           </div>
         </div>
+        <div class="topbar__search">
+          <input
+            type="search"
+            placeholder="Search files..."
+            data-role="search-input"
+          />
+          <div class="search-hint">Press Enter to open, Esc to close.</div>
+          <div class="search-list" data-role="search-list"></div>
+        </div>
         <div class="topbar__actions">
           <button class="ghost" data-action="start-fresh">Start Fresh</button>
           <button class="ghost" data-action="restore-sample">Restore Sample</button>
           <button class="ghost" data-action="set-api-key">Set API Key</button>
           <button class="ghost" data-action="toggle-theme">Light Mode</button>
+          <button class="ghost" data-action="copy-transcript">
+            Copy Transcript
+          </button>
           <button class="primary" data-action="export-json">Export JSON</button>
           <button class="primary" data-action="export-zip">Export ZIP</button>
           <button class="primary" data-action="export-markdown">Export Markdown</button>
@@ -54,11 +66,15 @@
           </div>
           <div class="terminal" data-role="message-list"></div>
           <div class="composer">
-            <textarea
-              rows="3"
-              placeholder="Share your background, goals, or paste a job description..."
-              data-role="message-input"
-            ></textarea>
+            <div class="composer__input">
+              <textarea
+                rows="3"
+                placeholder="Share your background, goals, or paste a job description..."
+                data-role="message-input"
+              ></textarea>
+              <div class="mention-list" data-role="mention-list"></div>
+              <div class="command-list" data-role="command-list"></div>
+            </div>
             <button class="primary" data-action="send">Send</button>
           </div>
         </section>
@@ -68,6 +84,11 @@
             <div>
               <h2>Active File</h2>
               <p data-role="active-path">Select a file to view or edit</p>
+            </div>
+            <div class="panel__header-actions">
+              <button class="ghost" data-action="summarize-note">
+                Summarize Note
+              </button>
             </div>
           </div>
           <textarea class="editor" data-role="file-editor" spellcheck="false"></textarea>
@@ -127,7 +148,7 @@
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="vendor/jszip.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

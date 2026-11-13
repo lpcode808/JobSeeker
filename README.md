@@ -13,7 +13,7 @@ A static web mockup for a CLI-inspired job seeker artifact. It stores a file tre
 Open `index.html` in a browser. No build step required.
 
 ## Storage
-All data is saved in `localStorage` under the key `jobseeker.artifact.v1`.
+Artifact data is saved in `localStorage` under `jobseeker.artifact.v1`. Gemini API keys default to `sessionStorage` for the current tab; check “Remember this key” to persist locally.
 
 ## Structure
 - `index.html`: UI shell

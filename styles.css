@@ -599,9 +599,18 @@ button.ghost {
   color: var(--muted);
 }
 
-.key-form__trust {
-  font-size: 0.8rem;
-  color: var(--accent);
+.key-form__remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.key-form__remember input {
+  width: auto;
+  margin: 0;
 }
 
 .key-actions {

@@ -1,5 +1,6 @@
 const STORAGE_KEY = "jobseeker.artifact.v1";
 const API_KEY_STORAGE = "jobseeker.geminiKey.v1";
+const API_KEY_REMEMBER = "jobseeker.geminiKey.remember.v1";
 const THEME_KEY = "jobseeker.theme.v1";
 const GEMINI_MODEL = "gemini-1.5-flash";
 const SYSTEM_PROMPT =
@@ -163,6 +164,7 @@ const dom = {
   apiKey: document.querySelector('[data-role="api-key"]'),
   apiKeyInput: document.querySelector('[data-role="api-key-input"]'),
   apiKeyStatus: document.querySelector('[data-role="api-key-status"]'),
+  apiKeyRemember: document.querySelector('[data-role="api-key-remember"]'),
   mentionList: document.querySelector('[data-role="mention-list"]'),
   commandList: document.querySelector('[data-role="command-list"]'),
   searchInput: document.querySelector('[data-role="search-input"]'),
@@ -207,6 +209,8 @@ const searchState = {
   results: [],
   selectedIndex: 0,
 };
+
+migrateLegacyApiKey();
 
 const storedState = loadState();
 let state = storedState ?? clone(sampleState);
@@ -460,8 +464,11 @@ function renderApiKeyOverlay(show) {
     dom.apiKeyInput.value = storedKey ? maskKey(storedKey) : "";
     dom.apiKeyInput.dataset.raw = storedKey || "";
     dom.apiKeyStatus.textContent = storedKey
-      ? "Key saved locally. Paste to replace it."
-      : "No key saved yet.";
+      ? describeStoredKey()
+      : "No key saved for this session yet.";
+    if (dom.apiKeyRemember) {
+      dom.apiKeyRemember.checked = isApiKeyRemembered();
+    }
     dom.apiKey.classList.add("is-visible");
   } else {
     dom.apiKey.classList.remove("is-visible");
@@ -639,17 +646,23 @@ actions.saveApiKey.addEventListener("click", () => {
     dom.apiKeyStatus.textContent = "Paste a key to save it.";
     return;
   }
-  localStorage.setItem(API_KEY_STORAGE, value);
-  dom.apiKeyStatus.textContent = "Saved. This key stays in your browser.";
+  const remember = Boolean(dom.apiKeyRemember?.checked);
+  saveApiKey(value, remember);
+  dom.apiKeyStatus.textContent = remember
+    ? "Saved. Key remembered in this browser until you forget it."
+    : "Saved for this browser tab session only.";
   dom.apiKeyInput.value = maskKey(value);
   dom.apiKeyInput.dataset.raw = value;
 });
 
 actions.clearApiKey.addEventListener("click", () => {
-  localStorage.removeItem(API_KEY_STORAGE);
+  clearApiKey();
   dom.apiKeyInput.value = "";
   dom.apiKeyInput.dataset.raw = "";
-  dom.apiKeyStatus.textContent = "Key cleared from this browser.";
+  if (dom.apiKeyRemember) {
+    dom.apiKeyRemember.checked = false;
+  }
+  dom.apiKeyStatus.textContent = "Key forgotten on this device.";
 });
 
 dom.apiKeyInput.addEventListener("input", (event) => {
@@ -1526,8 +1539,59 @@ function downloadFile(filename, contents) {
   URL.revokeObjectURL(url);
 }
 
+function migrateLegacyApiKey() {
+  const legacy = localStorage.getItem(API_KEY_STORAGE);
+  if (!legacy || localStorage.getItem(API_KEY_REMEMBER) === "1") {
+    return;
+  }
+  try {
+    sessionStorage.setItem(API_KEY_STORAGE, legacy);
+    localStorage.removeItem(API_KEY_STORAGE);
+  } catch (error) {
+    console.warn("Could not migrate API key to session storage", error);
+  }
+}
+
+function isApiKeyRemembered() {
+  return localStorage.getItem(API_KEY_REMEMBER) === "1";
+}
+
+function describeStoredKey() {
+  return isApiKeyRemembered()
+    ? "Key remembered locally. Paste to replace it."
+    : "Key saved for this tab session. Paste to replace it.";
+}
+
+function saveApiKey(value, remember) {
+  try {
+    sessionStorage.setItem(API_KEY_STORAGE, value);
+  } catch (error) {
+    console.warn("Could not save API key to session storage", error);
+  }
+  if (remember) {
+    localStorage.setItem(API_KEY_STORAGE, value);
+    localStorage.setItem(API_KEY_REMEMBER, "1");
+  } else {
+    localStorage.removeItem(API_KEY_STORAGE);
+    localStorage.removeItem(API_KEY_REMEMBER);
+  }
+}
+
+function clearApiKey() {
+  sessionStorage.removeItem(API_KEY_STORAGE);
+  localStorage.removeItem(API_KEY_STORAGE);
+  localStorage.removeItem(API_KEY_REMEMBER);
+}
+
 function loadApiKey() {
-  return localStorage.getItem(API_KEY_STORAGE);
+  const sessionKey = sessionStorage.getItem(API_KEY_STORAGE);
+  if (sessionKey) {
+    return sessionKey;
+  }
+  if (isApiKeyRemembered()) {
+    return localStorage.getItem(API_KEY_STORAGE);
+  }
+  return null;
 }
 
 function loadTheme() {
@@ -1657,10 +1721,13 @@ async function generateGeminiReply(prompt, history, options = {}) {
   const files = options.contextFiles || getContextFiles(prompt);
   const contents = buildGeminiContents(history, prompt, files);
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents,

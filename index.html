@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; img-src 'self' data:;"
+    />
     <title>JobSeeker Artifact</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -128,22 +132,25 @@
         <div class="overlay__badge">Bring Your Own Key</div>
         <h1>Paste your Gemini API key</h1>
         <p>
-          This key stays in your browser storage and is only used to call Gemini
-          directly from this interface.
+          By default the key is kept in this tab&rsquo;s session storage. Opt in
+          below to remember it across visits. It is sent only over HTTPS to
+          Google&rsquo;s Gemini API when you run AI features.
         </p>
         <div class="key-form">
           <input
             type="password"
-            placeholder="AIzaSy..."
+            placeholder="Paste API key"
+            autocomplete="off"
             data-role="api-key-input"
           />
+          <label class="key-form__remember">
+            <input type="checkbox" data-role="api-key-remember" />
+            Remember this key on this device
+          </label>
           <div class="key-form__note" data-role="api-key-status"></div>
-          <div class="key-form__trust">
-            Your key stays local. This demo does not send it anywhere.
-          </div>
         </div>
         <div class="key-actions">
-          <button class="ghost" data-action="clear-api-key">Clear Key</button>
+          <button class="ghost" data-action="clear-api-key">Forget Key</button>
           <button class="primary" data-action="save-api-key">Save Key</button>
         </div>
       </div>

@@ -23,6 +23,7 @@ test.describe('JobSeeker UX', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.clear();
+      sessionStorage.clear();
     });
     await page.goto('/', { waitUntil: 'networkidle' });
   });
@@ -123,13 +124,36 @@ test.describe('JobSeeker UX', () => {
     await page.locator('[data-action="save-api-key"]').click();
 
     await expect(page.locator('[data-role="api-key-status"]')).toHaveText(
-      'Saved. This key stays in your browser.'
+      'Saved for this browser tab session only.'
     );
     await expect(input).toHaveValue(/•{6}/);
 
     const stored = await page.evaluate(() => {
-      return localStorage.getItem('jobseeker.geminiKey.v1');
+      return {
+        session: sessionStorage.getItem('jobseeker.geminiKey.v1'),
+        local: localStorage.getItem('jobseeker.geminiKey.v1'),
+      };
     });
-    expect(stored).toBe('AIzaSyTestKey1234567890');
+    expect(stored.session).toBe('AIzaSyTestKey1234567890');
+    expect(stored.local).toBeNull();
+  });
+
+  test('api key remember opt-in persists in localStorage', async ({ page }) => {
+    await dismissOnboarding(page);
+
+    await page.locator('[data-action="set-api-key"]').click();
+    const input = page.locator('[data-role="api-key-input"]');
+    await input.fill('AIzaSyRememberedKey000000');
+    await page.locator('[data-role="api-key-remember"]').check();
+    await page.locator('[data-action="save-api-key"]').click();
+
+    const stored = await page.evaluate(() => {
+      return {
+        local: localStorage.getItem('jobseeker.geminiKey.v1'),
+        remember: localStorage.getItem('jobseeker.geminiKey.remember.v1'),
+      };
+    });
+    expect(stored.local).toBe('AIzaSyRememberedKey000000');
+    expect(stored.remember).toBe('1');
   });
 });
